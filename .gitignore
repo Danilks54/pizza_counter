@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Виртуальное окружение
 .venv/
 venv/
@@ -39,3 +40,6 @@ Thumbs.db
 # Загруженные изображения 
 # static/uploads/
 # static/results/
+=======
+New-Item -Path .gitignore -ItemType File
+>>>>>>> be8d16d1b16c9925c1d95f9900f43824198136db
