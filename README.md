@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # 🍕Pizza Counter🍕
 
 Веб-приложение для подсчёта пицц на фотографиях с использованием нейросети YOLOv8.
@@ -33,7 +32,4 @@ python -m pip install -r requirements.txt
 python app.py
 
 # После запуска переходим по адресу 
-http://localhost:5000
-=======
-New-Item -Path README.md -ItemType File
->>>>>>> be8d16d1b16c9925c1d95f9900f43824198136db
+http://localhost
