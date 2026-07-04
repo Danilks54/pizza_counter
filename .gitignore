@@ -1,0 +1,43 @@
+# Виртуальное окружение
+.venv/
+venv/
+ENV/
+env/
+
+# База данных
+*.db
+*.sqlite
+*.sqlite3
+
+# Файлы Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Логи и временные файлы
+*.log
+*.tmp
+*.temp
+
+# Загруженные изображения 
+# static/uploads/
+# static/results/
+
+# Файлы IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Файлы ОС
+.DS_Store
+Thumbs.db
+
+# Отчёты
+*.pdf
+*.docx
