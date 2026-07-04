@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍕🍕🍕 Подсчет пицц 🍕🍕🍕</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #fff5e6, #ffe0b2);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #e65100;
+            text-align: center;
+            font-size: 2.5em;
+        }
+        .upload-area {
+            border: 3px dashed #ff9800;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            background: #fff8f0;
+        }
+        .upload-area:hover {
+            background: #fff3e0;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .btn {
+            background: linear-gradient(135deg, #ff9800, #e65100);
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(230, 81, 0, 0.3);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .result-container {
+            margin-top: 30px;
+            display: none;
+        }
+        .result-container.active {
+            display: block;
+        }
+        .result-image {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: #f5f5f5;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #e65100;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .loading.active {
+            display: block;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff9800;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .file-info {
+            margin: 10px 0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍕 Подсчет пицц в кафе 🍕</h1>
+        <p style="text-align: center; color: #666;">Загрузите фото и узнайте, сколько пицц на столе!</p>
+
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+            <div style="font-size: 3em;">📸</div>
+            <p>Нажмите, чтобы выбрать фото</p>
+            <input type="file" id="fileInput" accept="image/*">
+        </div>
+
+        <div id="fileInfo" class="file-info"></div>
+
+        <div style="text-align: center;">
+            <button class="btn" id="processBtn" onclick="processImage()">🔍 Подсчитать пиццы</button>
+        </div>
+
+        <div class="loading" id="loadingIndicator">
+            <div class="spinner"></div>
+            <p>🔄 Обработка изображения...</p>
+        </div>
+
+        <div class="result-container" id="resultContainer">
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="pizzaCount">0</div>
+                    <div>🍕 Пицц найдено</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="processingTime">0</div>
+                    <div>⏱ Время обработки (с)</div>
+                </div>
+            </div>
+            <h3>Результат:</h3>
+            <img id="resultImage" class="result-image" src="" alt="Результат">
+        </div>
+    </div>
+
+    <script>
+        let selectedFile = null;
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                selectedFile = this.files[0];
+                document.getElementById('fileInfo').innerHTML = 
+                    `📎 Выбран файл: <strong>${selectedFile.name}</strong>`;
+                document.getElementById('resultContainer').classList.remove('active');
+            }
+        });
+
+        async function processImage() {
+            if (!selectedFile) {
+                alert('Пожалуйста, выберите фото!');
+                return;
+            }
+
+            const btn = document.getElementById('processBtn');
+            const loading = document.getElementById('loadingIndicator');
+            
+            btn.disabled = true;
+            loading.classList.add('active');
+            
+            const formData = new FormData();
+            formData.append('image', selectedFile);
+
+            try {
+                const response = await fetch('/process', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('pizzaCount').textContent = data.pizza_count;
+                    document.getElementById('processingTime').textContent = data.processing_time;
+                    document.getElementById('resultImage').src = data.result_image + '?' + Date.now();
+                    document.getElementById('resultContainer').classList.add('active');
+                } else {
+                    alert('Ошибка: ' + (data.error || 'Неизвестная ошибка'));
+                }
+            } catch (error) {
+                alert('Ошибка при обработке: ' + error.message);
+            }
+
+            btn.disabled = false;
+            loading.classList.remove('active');
+        }
+    </script>
+</body>
+</html>
